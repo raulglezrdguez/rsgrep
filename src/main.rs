@@ -10,7 +10,7 @@ fn main() {
         process::exit(1);
     }
 
-    let config = parse_config(&args);
+    let config = Config::new(&args);
 
     println!("Searching for '{}'", config.query);
     println!("In file '{}'", config.file_path);
@@ -24,9 +24,12 @@ struct Config <'a> {
     file_path: &'a str,
 }
 
-fn parse_config(args: &[String]) -> Config {
-    let query = &args[1];
-    let file_path = &args[2];
+impl <'a> Config<'a> {
+    fn new(args: &'a [String]) -> Config<'a> {
+        let query = &args[1];
+        let file_path = &args[2];
 
-    Config {query, file_path}
+        Config { query, file_path }
+    }
 }
+
