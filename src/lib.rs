@@ -22,8 +22,12 @@ impl <'a> Config<'a> {
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(config.file_path)?;
-    if content.contains(config.query) {
-        println!("Found '{}' in '{}'", config.query, config.file_path);
+    let found = search(config.query, &content);
+    if found.len() > 0 {
+        println!("Found:");
+        for line in found {
+            println!("{line}")
+        }
     } else {
         println!("'{}' not found in '{}'", config.query, config.file_path);
     }
@@ -31,7 +35,14 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    vec![]
+    let mut result = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            result.push(line)
+        }
+    }
+    result
 }
 
 #[cfg(test)]
@@ -54,11 +65,9 @@ mod tests {
 
     #[test]
     fn test_search() {
-        let query = "test";
+        let query = "another";
         let contents = "\
-        This is a test string.
-        This is a another string.
-        And another one.
+        This is a test string.\nThis is a another string.\nAnd another one.
         ";
         let results = search(query, contents);
         let result_ok: Vec<& str> = vec![];
