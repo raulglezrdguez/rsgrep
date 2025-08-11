@@ -14,16 +14,21 @@ fn main() {
     println!("Searching for '{}'", config.query);
     println!("In file '{}'", config.file_path);
 
-    run(config);
+    if let Err(e) = run(config) {
+        eprintln!("Application error: {e}");
+        process::exit(1);
+    }
+    println!("Search completed successfully.");
 }
 
-fn run(config: Config) {
-    let content = fs::read_to_string(config.file_path).expect("read file content");
+fn run(config: Config) -> Result<(), Box<dyn std::error::Error>> {
+    let content = fs::read_to_string(config.file_path)?;
     if content.contains(config.query) {
         println!("Found '{}' in '{}'", config.query, config.file_path);
     } else {
         println!("'{}' not found in '{}'", config.query, config.file_path);
     }
+    Ok(())
 }
 
 // Config struct to hold the query and file path
