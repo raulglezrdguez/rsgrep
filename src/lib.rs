@@ -30,3 +30,39 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    vec![]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_config_build() {
+        let args = vec!["rsgrep".to_string(), "test".to_string(), "test.txt".to_string()];
+        let config = Config::build(&args).unwrap();
+        assert_eq!(config.query, "test");
+        assert_eq!(config.file_path, "test.txt");
+    }
+
+    #[test]
+    fn test_config_build_invalid_args() {
+        let args = vec!["rsgrep".to_string()];
+        assert!(Config::build(&args).is_err());
+    }
+
+    #[test]
+    fn test_search() {
+        let query = "test";
+        let contents = "\
+        This is a test string.
+        This is a another string.
+        And another one.
+        ";
+        let results = search(query, contents);
+        let result_ok: Vec<& str> = vec![];
+        assert_eq!(results, result_ok); 
+    }
+
+}
