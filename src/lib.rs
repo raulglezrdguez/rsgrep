@@ -5,6 +5,7 @@ use std::error::Error;
 pub struct Config <'a> {
     pub query: &'a str,
     pub file_path: &'a str,
+    pub ignore_case: bool,
 }
 
 impl <'a> Config<'a> {
@@ -15,14 +16,15 @@ impl <'a> Config<'a> {
 
         let query = &args[1];
         let file_path = &args[2];
+        let ignore_case = std::env::var("IGNORE_CASE").is_ok();
 
-        Ok(Config { query, file_path })
+        Ok(Config { query, file_path, ignore_case })
     }
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(config.file_path)?;
-    let found = search(config.query, &content);
+    let found = search(config.query, &content, config.ignore_case);
     if found.len() > 0 {
         println!("Found:");
         for line in found {
@@ -34,12 +36,18 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+pub fn search<'a>(query: &str, contents: &'a str, ignore_case: bool) -> Vec<&'a str> {
     let mut result = Vec::new();
 
     for line in contents.lines() {
-        if line.contains(query) {
-            result.push(line)
+        if ignore_case {
+            if line.to_lowercase().contains(&query.to_lowercase()) {
+                result.push(line);
+            }
+        } else {
+            if line.contains(query) {
+                result.push(line)
+            }
         }
     }
     result
