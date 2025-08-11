@@ -5,11 +5,6 @@ use std::fs;
 fn main() {
     let args = env::args().collect::<Vec<String>>();
 
-    // if args.len() != 3 {
-    //     eprintln!("Usage: {} <query> <file_path>", args[0]);
-    //     process::exit(1);
-    // }
-
     let config = Config::build(&args).unwrap_or_else(|err| {
         eprintln!("{err}");
         eprintln!("Usage: {} <query> <file_path>", args[0]);
@@ -19,10 +14,19 @@ fn main() {
     println!("Searching for '{}'", config.query);
     println!("In file '{}'", config.file_path);
 
-    let content = fs::read_to_string(config.file_path).expect("read file content");
-    println!("With text:\n{content}");
+    run(config);
 }
 
+fn run(config: Config) {
+    let content = fs::read_to_string(config.file_path).expect("read file content");
+    if content.contains(config.query) {
+        println!("Found '{}' in '{}'", config.query, config.file_path);
+    } else {
+        println!("'{}' not found in '{}'", config.query, config.file_path);
+    }
+}
+
+// Config struct to hold the query and file path
 struct Config <'a> {
     query: &'a str,
     file_path: &'a str,
