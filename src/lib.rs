@@ -73,12 +73,12 @@ mod tests {
 
     #[test]
     fn test_search() {
-        let query = "another";
+        let query = "test";
         let contents = "\
         This is a test string.\nThis is a another string.\nAnd another one.
         ";
-        let results = search(query, contents);
-        let result_ok: Vec<& str> = vec![];
+        let results = search(query, contents, true);
+        let result_ok: Vec<& str> = vec!["This is a test string."];
         assert_eq!(results, result_ok); 
     }
 
