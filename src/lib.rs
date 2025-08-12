@@ -1,7 +1,11 @@
+//! # rsgrep 
+//! Lib contains the struct `Config` & functions `run` and `search` that conform the kernel's lib code.
+//! 
+
 use std::fs;
 use std::error::Error;
 
-// Config struct to hold the query and file path
+/// Config struct to hold the query and file path
 pub struct Config <'a> {
     pub query: &'a str,
     pub file_path: &'a str,
@@ -9,6 +13,16 @@ pub struct Config <'a> {
 }
 
 impl <'a> Config<'a> {
+    /// Build a Config struct from args passed to binary
+    /// 
+    /// # Example:
+    /// ```
+    /// let config = Config::build(&args).unwrap_or_else(|err| {
+    ///    eprintln!("{err}");
+    ///    eprintln!("Usage: {} <query> <file_path>", args[0]);
+    ///    process::exit(1);
+    /// });
+    /// ```
     pub fn build(args: &'a [String]) -> Result<Config<'a>, &'static str> {
         if args.len() != 3 {
             return Err("Invalid argument count");
@@ -22,6 +36,15 @@ impl <'a> Config<'a> {
     }
 }
 
+/// Run the main code block
+/// 
+/// # Example:
+/// ```
+/// if let Err(e) = run(config) {
+///    eprintln!("Application error: {e}");
+///    process::exit(1);
+/// }
+/// ```
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let content = fs::read_to_string(config.file_path)?;
     let found = search(config.query, &content, config.ignore_case);
@@ -36,6 +59,20 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Search query string in the contents ignorin case
+/// 
+/// # Example:
+/// ```
+/// let found = search(config.query, &content, config.ignore_case);
+/// if found.len() > 0 {
+///    println!("Found:");
+///    for line in found {
+///        println!("{line}")
+///    }
+/// } else {
+///    println!("'{}' not found in '{}'", config.query, config.file_path);
+/// }
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str, ignore_case: bool) -> Vec<&'a str> {
     let mut result = Vec::new();
 
